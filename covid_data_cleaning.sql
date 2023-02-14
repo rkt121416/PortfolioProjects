@@ -1,61 +1,41 @@
-/*
+-- Create Tableau table 1 with total cases, total deaths, and death percentage by continent
+SELECT
+    SUM(new_cases) AS total_cases,
+    SUM(CAST(new_deaths AS int)) AS total_deaths,
+    SUM(CAST(new_deaths AS int)) / SUM(new_cases) * 100 AS death_percentage,
+    continent
+INTO covid_data..tableau_table_1
+FROM covid_data..covid_deaths
+WHERE continent IS NOT NULL
+GROUP BY continent;
 
-Queries used for Tableau Project
+-- Create Tableau table 2 with the total death count for each location where the continent is null and not in ('World', 'European Union', 'International')
+SELECT
+    location,
+    SUM(CAST(new_deaths AS int)) AS total_death_count
+INTO covid_data..tableau_table_2
+FROM covid_data..covid_deaths
+WHERE continent IS NULL
+    AND location NOT IN ('World', 'European Union', 'International')
+GROUP BY location;
 
-*/
+-- Create Tableau table 3 with the highest infection count and percent population infected for each location
+SELECT
+    Location AS location_non_null,
+    Population AS population_non_null,
+    MAX(total_cases) AS highest_infection_count,
+    MAX(total_cases / population) * 100 AS percent_population_infected
+INTO covid_data..tableau_table_3
+FROM covid_data..covid_deaths
+GROUP BY Location, Population;
 
-
-
--- tableau_table_1
-
-SELECT * INTO covid_data..tableau_table_1
-FROM (
-	SELECT	
-		SUM(new_cases) AS total_cases, 
-		SUM(cast(new_deaths AS int)) AS total_deaths, 
-		SUM(cast(new_deaths AS int))/SUM(New_Cases)*100 AS death_percentage
-	FROM covid_data..covid_deaths
-	WHERE continent IS NOT NULL) AS aggregated_data;
-
-
-
---tableau_table_2
-
-SELECT * INTO covid_data..tableau_table_2
-FROM (
-	Select 
-		location, 
-		SUM(cast(new_deaths as int)) as total_death_count
-	From covid_data..covid_deaths
-	Where continent is null 
-	and location not in ('World', 'European Union', 'International')
-	Group by location) AS aggregated_data;
-
-
-
--- tableau_table_3
-
-SELECT * INTO covid_data..tableau_table_3
-FROM (
-	Select 
-		ISNULL(Location,0) AS location_non_null,
-		ISNULL(Population,0) AS population_non_null, 
-		MAX(ISNULL(total_cases,0)) as highest_infection_count,  
-		Max(isnull((total_cases/population),0))*100 as percent_population_infected
-	From covid_data..covid_deaths
-	Group by Location, Population) AS aggregated_data;
-
-
-
--- tableau_table_4
-
-SELECT * INTO covid_data..tableau_table_4
-FROM (
-	Select 
-		date,
-		ISNULL(Location,0) AS location_non_null,
-		ISNULL(Population,0) AS population_non_null, 
-		MAX(ISNULL(total_cases,0)) as highest_infection_count,  
-		Max(isnull((total_cases/population),0))*100 as percent_population_infected
-	From covid_data..covid_deaths
-	Group by Location, Population, date) AS aggregated_data;
+-- Create Tableau table 4 with the highest infection count and percent population infected for each location on each date
+SELECT
+    date,
+    Location AS location_non_null,
+    Population AS population_non_null,
+    MAX(total_cases) AS highest_infection_count,
+    MAX(total_cases / population) * 100 AS percent_population_infected
+INTO covid_data..tableau_table_4
+FROM covid_data..covid_deaths
+GROUP BY date, Location, Population;
