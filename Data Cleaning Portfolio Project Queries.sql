@@ -1,4 +1,3 @@
-```
 Select *
 From PortfolioProject.dbo.NashvilleHousing
 
@@ -114,7 +113,7 @@ ALTER TABLE NashvilleHousing
 Add OwnerSplitState Nvarchar(255);
 
 Update NashvilleHousing
-SET```
+SET
 
 
 
